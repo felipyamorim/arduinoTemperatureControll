@@ -5,10 +5,9 @@
  
 #define DS18B20 D2          //DS18B20 is connected to GPIO Pin 2
 
-String apiKey = "XXXX";     //  Enter your Write API key from ThingSpeak
-const char* ssid =  "XXXX";     // Enter your WiFi Network's SSID
-const char* pass =  "XXXX"; // Enter your WiFi Network's Password
-const char* server = "api.thingspeak.com";
+String apiKey = "xxx";     //  Enter your Write API key from ThingSpeak
+const char* ssid =  "xxx";     // Enter your WiFi Network's SSID
+const char* pass =  "xxx"; // Enter your WiFi Network's Password
 float temp;
 float setPoint = 25.5;
 float tempAction = 0.7;
@@ -50,30 +49,37 @@ void loop()
   
       sensor.requestTemperatures();
       temp = sensor.getTempCByIndex(0);
+    
+      Serial.println("Temperatura: " + String(temp));
 
-       if(relayActivated){
-          if(temp >= setPoint){
-               relayActivated = false;
-               digitalWrite(porta_rele, LOW);
-          }
-       }else{
-         if(temp <= (setPoint - tempAction)){
-              relayActivated = true;
-              digitalWrite(porta_rele, HIGH);
-         }        
-       }
+      if(temp != -127.00){
+         if(relayActivated){
+            if(temp >= setPoint){
+                 relayActivated = false;
+                 digitalWrite(porta_rele, LOW);
+            }
+         }else{
+           if(temp <= (setPoint - tempAction)){
+                relayActivated = true;
+                digitalWrite(porta_rele, HIGH);
+           }        
+         }
+      }else{
+        Serial.println("Erro na sonda, verifique se a mesma esta encaixada corretamente!");
+        digitalWrite(porta_rele, LOW);
+      }
 
         HTTPClient http;  //Declare an object of class HTTPClient
        
-          http.begin("http://www.yoururl.com.br?api_key="+apiKey+"&temperatura="+String(temp));  
+          http.begin("http://www.xxx.com/monitor.php?api_key="+apiKey+"&temperatura="+String(temp));  
           int httpCode = http.GET();                                                                  
           Serial.println("Sending...");
-          if (httpCode > 0) { //Check the returning code
+          /*if (httpCode > 0) { //Check the returning code
             Serial.print("Return status: " + httpCode);
             String payload = http.getString();   //Get the request response payload
             Serial.println(payload);                    //Print the response payload
        
-          }       
+          }*/       
           http.end();   
 
       delay(3000);
